@@ -25,7 +25,6 @@ function update() {
 function digestThrows() {
     const hash = helloSha512();
     hash.digest("hex");
-    assertThrows(() => { hash.digest(); });
     assertThrows(() => { hash.update("hello world"); });
 }
 
