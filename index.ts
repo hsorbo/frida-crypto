@@ -30,14 +30,20 @@ export class Hash {
         return this;
     }
 
-    digest(encoding?: string): Buffer | string {
+    digest(encoding: BinaryToTextEncoding = "binary"): Buffer | string {
         if (encoding === "hex")
             return this.checksum.getString();
 
-        return Buffer.from(this.checksum.getDigest());
+        const rawDigest = Buffer.from(this.checksum.getDigest());
+        if (encoding === "binary")
+            return rawDigest;
+
+        return rawDigest.toString(encoding);
     }
 
     copy(): Hash {
         throw new Error("copy() not yet supported");
     }
 }
+
+type BinaryToTextEncoding = "binary" | "base64" | "base64url" | "hex";
