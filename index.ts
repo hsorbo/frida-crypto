@@ -23,19 +23,21 @@ export class Hash {
         if (data instanceof DataView) {
             const uint8Array = new Uint8Array(data.buffer, data.byteOffset, data.byteLength);
             this.checksum.update(uint8Array.buffer as ArrayBuffer);
-        }
-        if (inputEncoding !== undefined) {
-            this.checksum.update(data as string);
-        } else {
-            if (data instanceof Buffer) {
-                this.checksum.update(data.buffer as ArrayBuffer);
-            } else {
-                this.checksum.update(data as string);
+        } else if (inputEncoding !== undefined) {
+            if (typeof data !== 'string') {
+                throw new Error("Input data must be a string when inputEncoding is specified");
             }
+            const buffer = Buffer.from(data, inputEncoding as BinaryToTextEncoding);
+            this.checksum.update(Array.from(buffer));
+        } else if (data instanceof Buffer) {
+            this.checksum.update(Array.from(data));
+        } else {
+            this.checksum.update(data as string);
         }
         return this;
     }
-
+    
+    
     digest(encoding: BinaryToTextEncoding = "binary"): Buffer | string {
         if (encoding === "hex")
             return this.checksum.getString();
