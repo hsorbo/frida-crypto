@@ -69,14 +69,15 @@ export function randomFillSync(buffer: Buffer | Uint8Array | DataView, offset = 
     if (!size) size = buffer.byteLength - offset;
     if (offset < 0 || size < 0 || offset + size > buffer.byteLength)
         throw new RangeError("Invalid offset or size");
+    const uint8Array = new Uint8Array(buffer.buffer, buffer.byteOffset, buffer.byteLength);
     if (buffer instanceof Buffer || buffer instanceof Uint8Array) {
         for (let i = offset; i < offset + size; i++)
-            buffer[i] = Math.floor(Math.random() * 256);
+            uint8Array[i] = Math.floor(Math.random() * 256);
+        buffer = buffer instanceof Buffer ? Buffer.from(uint8Array) : uint8Array;
     } else if (buffer instanceof DataView) {
-        const uint8Array = new Uint8Array(buffer.buffer, buffer.byteOffset, buffer.byteLength);
         for (let i = offset; i < offset + size; i++)
             uint8Array[i] = Math.floor(Math.random() * 256);
-        buffer = Buffer.from(uint8Array);
+        buffer = new DataView(uint8Array.buffer, uint8Array.byteOffset, uint8Array.byteLength);
     }
     return buffer;
 }
