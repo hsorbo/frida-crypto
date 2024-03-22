@@ -76,7 +76,7 @@ export function randomFillSync(buffer: Buffer | Uint8Array | DataView, offset = 
         const uint8Array = new Uint8Array(buffer.buffer, buffer.byteOffset, buffer.byteLength);
         for (let i = offset; i < offset + size; i++)
             uint8Array[i] = Math.floor(Math.random() * 256);
-        return buffer;
+        buffer = Buffer.from(uint8Array);
     }
     return buffer;
 }
