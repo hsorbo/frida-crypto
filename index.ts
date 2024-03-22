@@ -36,8 +36,7 @@ export class Hash {
         }
         return this;
     }
-    
-    
+
     digest(encoding: BinaryToTextEncoding = "binary"): Buffer | string {
         if (encoding === "hex")
             return this.checksum.getString();
