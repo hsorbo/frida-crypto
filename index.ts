@@ -26,6 +26,10 @@ export function createHash(type: ChecksumType): Hash {
 export class Hash {
     checksum: Checksum;
 
+    /**
+      * Constructs a new Hash object with the provided checksum.
+      * @param checksum The checksum object to associate with this Hash instance.
+      */
     constructor(checksum: Checksum) {
         this.checksum = checksum;
     }
