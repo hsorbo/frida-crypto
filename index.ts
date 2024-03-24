@@ -4,6 +4,36 @@ import { Buffer } from 'buffer';
 // Defining types
 type BinaryToTextEncoding = "binary" | "base64" | "base64url" | "hex";
 
+interface HashOptions {
+    /**
+     * The size of the resulting hash in bytes. If specified, the encoding
+     * parameter must be set to 'buffer'.
+     */
+    length?: number;
+
+    /**
+     * The encoding of the result. Can be 'buffer', 'hex', 'latin1' or 'base64'.
+     * Defaults to 'hex'.
+     */
+    encoding?: 'buffer' | 'hex' | 'latin1' | 'base64';
+
+    /**
+     * The HMAC key to use.
+     */
+    key?: string | Buffer | DataView;
+
+    /**
+     * Character encoding to use when updating the hash with string data. Defaults to 'utf8'.
+     */
+    inputEncoding?: BufferEncoding;
+
+    /**
+     * Character encoding to use when emitting hash digest. Defaults to 'latin1'.
+     */
+    outputEncoding?: BufferEncoding;
+}
+
+
 // Exporting functions and class
 export default {
     createHash,
@@ -16,22 +46,25 @@ export default {
 /**
  * Creates a hash object with the specified checksum type.
  * @param type The type of checksum algorithm to use.
+ * @param options The hash options (optional).
  * @returns A new Hash object.
  */
-export function createHash(type: ChecksumType): Hash {
-    return new Hash(new Checksum(type));
+export function createHash(type: ChecksumType, options?: HashOptions): Hash {
+    return new Hash(new Checksum(type), options);
 }
 
 // Class representing a hash object
 export class Hash {
     checksum: Checksum;
+    options: HashOptions | undefined;
 
     /**
       * Constructs a new Hash object with the provided checksum.
       * @param checksum The checksum object to associate with this Hash instance.
       */
-    constructor(checksum: Checksum) {
+    constructor(checksum: Checksum, options?: HashOptions) {
         this.checksum = checksum;
+        this.options = options;
     }
 
     // Method to update the hash with input data
@@ -51,10 +84,13 @@ export class Hash {
             if (typeof data !== 'string') {
                 throw new Error('Input data must be a string when inputEncoding is specified');
             }
-            const buffer = Buffer.from(data, inputEncoding as BinaryToTextEncoding);
+            const buffer = Buffer.from(data, inputEncoding as BufferEncoding);
             this.checksum.update(Array.from(buffer));
         } else if (data instanceof Buffer) {
             // If data is a Buffer, convert it to an array and update the checksum
+            this.checksum.update(Array.from(data));
+        } else if (data instanceof Uint8Array) {
+            // If data is a Uint8Array, convert it to an array and update the checksum
             this.checksum.update(Array.from(data));
         } else {
             // Otherwise, update the checksum directly
@@ -89,7 +125,7 @@ export class Hash {
      * @returns A new Hash object identical to this one.
      */
     copy(): Hash {
-        return new Hash(this.checksum);
+        return new Hash(this.checksum, this.options);
     }
 }
 
