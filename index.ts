@@ -61,6 +61,7 @@ export class Hash {
     /**
       * Constructs a new Hash object with the provided checksum.
       * @param checksum The checksum object to associate with this Hash instance.
+      * @param options Optional options for the hash object.
       */
     constructor(checksum: Checksum, options?: HashOptions) {
         this.checksum = checksum;
