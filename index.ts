@@ -87,11 +87,8 @@ export class Hash {
             }
             const buffer = Buffer.from(data, inputEncoding as BufferEncoding);
             this.checksum.update(Array.from(buffer));
-        } else if (data instanceof Buffer) {
-            // If data is a Buffer, convert it to an array and update the checksum
-            this.checksum.update(Array.from(data));
-        } else if (data instanceof Uint8Array) {
-            // If data is a Uint8Array, convert it to an array and update the checksum
+        } else if (data instanceof Buffer || data instanceof Uint8Array) {
+            // If data is a Buffer or Uint8Array, convert it to an array and update the checksum
             this.checksum.update(Array.from(data));
         } else {
             // Otherwise, update the checksum directly
